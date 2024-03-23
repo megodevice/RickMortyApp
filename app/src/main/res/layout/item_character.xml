@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="1dp"
+    android:backgroundTint="@color/card_gray"
+    app:cardCornerRadius="16dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/iv_avatar"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintWidth_percent="0.4"
+            app:layout_constraintHeight_percent="1"
+            android:importantForAccessibility="no"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/ic_launcher"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_character_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/iv_avatar"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Character Name" />
+
+        <TextView
+            android:id="@+id/tv_character_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/tv_character_name"
+            app:layout_constraintTop_toBottomOf="@id/tv_character_name"
+            tools:text="Status - Type"
+            android:drawablePadding="4dp"
+            tools:drawableStartCompat="@drawable/ic_dot_unknown" />
+
+        <TextView
+            android:id="@+id/tv_t1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/last_known_location"
+            android:textColor="@color/text_gray"
+            app:layout_constraintStart_toStartOf="@id/tv_character_name"
+            app:layout_constraintTop_toBottomOf="@id/tv_character_status" />
+
+        <TextView
+            android:id="@+id/tv_last_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/tv_character_name"
+            app:layout_constraintTop_toBottomOf="@id/tv_t1"
+            tools:text="Last seen location" />
+
+        <TextView
+            android:layout_marginTop="16dp"
+            android:id="@+id/tv_t2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/first_seen_in"
+            android:textColor="@color/text_gray"
+            app:layout_constraintStart_toStartOf="@id/tv_character_name"
+            app:layout_constraintTop_toBottomOf="@id/tv_last_location" />
+
+        <TextView
+            android:id="@+id/tv_first_seen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:paddingBottom="8dp"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/tv_character_name"
+            app:layout_constraintTop_toBottomOf="@id/tv_t2"
+            tools:text="First seen in..." />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
