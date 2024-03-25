@@ -1,7 +1,7 @@
 package com.iliazusik.rickmortyapp.di
 
 import com.ilia_zusik.rickmortyapp.BuildConfig
-import com.iliazusik.rickmortyapp.network.CharacterApi
+import com.iliazusik.rickmortyapp.data.network.CharacterApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,6 +16,13 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object Module {
+
+
+    @Singleton
+    @Provides
+    fun provideEmptyOkHttpClient() : OkHttpClient {
+        return OkHttpClient()
+    }
 
     @Singleton
     @Provides
