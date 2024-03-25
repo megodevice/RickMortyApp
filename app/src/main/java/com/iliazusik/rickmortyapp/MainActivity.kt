@@ -1,6 +1,7 @@
 package com.iliazusik.rickmortyapp
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.ilia_zusik.rickmortyapp.databinding.ActivityMainBinding
@@ -21,9 +22,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         initView()
-        initListeners()
         observe()
-
         viewModel.giveCharacters()
     }
 
@@ -35,11 +34,8 @@ class MainActivity : AppCompatActivity() {
         viewModel.characters.observe(this) {
             (binding.rvCharacters.adapter as CharactersRecyclerViewAdapter).submitList(it)
         }
-    }
-
-    private fun initListeners() {
-        binding.root.setOnClickListener {
-
+        viewModel.message.observe(this) {
+            Toast.makeText(this, it, Toast.LENGTH_LONG).show()
         }
     }
 }

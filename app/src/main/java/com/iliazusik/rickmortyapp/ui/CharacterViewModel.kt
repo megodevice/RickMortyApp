@@ -28,14 +28,16 @@ class CharacterViewModel @Inject constructor(private val characterApi: Character
                 override fun onResponse(p0: Call<CharactersModel>, p1: Response<CharactersModel>) {
                     if (p1.isSuccessful) {
                         p1.body()?.apply {
-                            if (this.characters.isNotEmpty())
+                            if (this.characters.isNotEmpty()) {
                                 _characters.postValue(
                                     _characters.value?.toMutableList()
                                         ?.apply { addAll(p1.body()?.characters ?: listOf()) }
                                 )
+                            }
                             maxPage = this.requestInfo.pages
-                            if (page == 0)
+                            if (page == 0) {
                                 _message.postValue("Total characters: ${this.requestInfo.count}")
+                            }
                             page++
                         }
                     }
@@ -44,8 +46,6 @@ class CharacterViewModel @Inject constructor(private val characterApi: Character
                 override fun onFailure(p0: Call<CharactersModel>, p1: Throwable) {
                     _message.postValue(p1.message ?: "Error")
                 }
-
             })
     }
-
 }

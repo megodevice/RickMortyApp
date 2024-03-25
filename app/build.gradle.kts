@@ -22,6 +22,7 @@ android {
         buildConfigField("String", "PAGE", "\"page\"")
         buildConfigField("String", "ALIVE", "\"Alive\"")
         buildConfigField("String", "DEATH", "\"Dead\"")
+        buildConfigField("String", "EPISODE", "\"episode/\"")
 
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
