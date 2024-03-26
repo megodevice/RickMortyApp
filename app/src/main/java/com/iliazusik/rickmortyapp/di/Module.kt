@@ -17,13 +17,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object Module {
 
-
-    @Singleton
-    @Provides
-    fun provideEmptyOkHttpClient() : OkHttpClient {
-        return OkHttpClient()
-    }
-
     @Singleton
     @Provides
     fun provideCharacterApi(): CharacterApi {

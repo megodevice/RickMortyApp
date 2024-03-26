@@ -1,5 +1,4 @@
-package com.iliazusik.rickmortyapp.ui
-
+package com.iliazusik.rickmortyapp.ui.characters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -11,16 +10,17 @@ import com.ilia_zusik.rickmortyapp.BuildConfig
 import com.ilia_zusik.rickmortyapp.R
 import com.ilia_zusik.rickmortyapp.databinding.ItemCharacterBinding
 import com.iliazusik.rickmortyapp.data.Character
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import java.io.IOException
+import com.iliazusik.rickmortyapp.data.EpisodeModel
+import com.iliazusik.rickmortyapp.data.network.CharacterApi
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import javax.inject.Inject
 
-class CharactersRecyclerViewAdapter :
+
+class CharactersRecyclerViewAdapter @Inject constructor(private val api: CharacterApi) :
     ListAdapter<Character, CharactersRecyclerViewAdapter.CharacterViewHolder>(DIFF_UTIL_CALL_BACK) {
+
 
     private companion object {
         val DIFF_UTIL_CALL_BACK: DiffUtil.ItemCallback<Character> =
@@ -38,9 +38,7 @@ class CharactersRecyclerViewAdapter :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CharacterViewHolder {
         return CharacterViewHolder(
             ItemCharacterBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
+                LayoutInflater.from(parent.context), parent, false
             )
         )
     }
@@ -49,34 +47,35 @@ class CharactersRecyclerViewAdapter :
         holder.onBind(getItem(position))
     }
 
+
     inner class CharacterViewHolder(private val binding: ItemCharacterBinding) :
         RecyclerView.ViewHolder(binding.root) {
-
-        @Inject
-        lateinit var client: OkHttpClient
 
         fun onBind(character: Character) {
             binding.apply {
                 tvCharacterName.text = character.name
-                tvFirstSeen.text = character.episode.getOrNull(0) ?: "Unknown"
 
-                val request = Request.Builder()
-                    .url(character.episode.getOrNull(0) ?: String())
-                    .build()
+                if (character.firsSeenEpisodeName.isNullOrEmpty()) {
+                    character.episode.getOrNull(0)?.apply {
+                        api.getSingleEpisode(this).enqueue(object : Callback<EpisodeModel> {
+                            override fun onResponse(
+                                episodeCall: Call<EpisodeModel>,
+                                episodeResponse: Response<EpisodeModel>
+                            ) {
+                                if (episodeResponse.isSuccessful && episodeResponse.body() != null && episodeResponse.code() in 200..300) {
+                                    episodeResponse.body()?.let { episodeModel ->
+                                        character.firsSeenEpisodeName = episodeModel.name
+                                        tvFirstSeen.text = episodeModel.name
+                                    }
+                                }
+                            }
 
-                client.newCall(request).enqueue(object : Callback {
-                    override fun onFailure(call: Call, e: IOException) {
-
+                            override fun onFailure(p0: Call<EpisodeModel>, p1: Throwable) {}
+                        })
                     }
-
-                    override fun onResponse(call: Call, response: Response) {
-                        response.use {
-
-                        }
-                    }
-                })
-
-
+                } else {
+                    tvFirstSeen.text = character.firsSeenEpisodeName
+                }
 
                 tvLastLocation.text = character.location.name
                 "${character.status} - ${character.gender}".apply {

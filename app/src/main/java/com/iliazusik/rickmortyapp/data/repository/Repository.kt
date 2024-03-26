@@ -20,7 +20,6 @@ class Repository @Inject constructor(
     fun getData(): LiveData<Resource<List<Character>>> = data
 
     fun fetchCharacters() {
-
         data.postValue(Resource.Loading())
 
         api.getCharacters().enqueue(object : Callback<CharactersModel> {
@@ -29,8 +28,8 @@ class Repository @Inject constructor(
                 response: Response<CharactersModel>
             ) {
                 if (response.isSuccessful && response.body() != null && response.code() in 200..300) {
-                    response.body()?.let {
-                        data.postValue(Resource.Success(it.characters))
+                    response.body()?.let { charactersModel ->
+                        data.postValue(Resource.Success(charactersModel.characters))
                     }
                 }
             }
@@ -40,5 +39,4 @@ class Repository @Inject constructor(
             }
         })
     }
-
 }

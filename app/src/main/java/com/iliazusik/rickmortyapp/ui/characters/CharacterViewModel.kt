@@ -1,17 +1,11 @@
-package com.iliazusik.rickmortyapp.ui
+package com.iliazusik.rickmortyapp.ui.characters
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.iliazusik.rickmortyapp.data.Character
-import com.iliazusik.rickmortyapp.data.CharactersModel
-import com.iliazusik.rickmortyapp.data.network.CharacterApi
 import com.iliazusik.rickmortyapp.data.repository.Repository
 import com.iliazusik.rickmortyapp.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel

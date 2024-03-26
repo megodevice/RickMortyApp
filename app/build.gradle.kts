@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.hiltAndroidPlugin)
     id("kotlin-kapt")
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -81,6 +82,13 @@ dependencies {
     // fragmentX activityX
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.activity.ktx)
+
+    // lottie animation
+    implementation(libs.lottie)
+
+    // Navigation Component
+    implementation (libs.androidx.navigation.fragment.ktx)
+    implementation (libs.androidx.navigation.ui.ktx)
 }
 
 kapt {
