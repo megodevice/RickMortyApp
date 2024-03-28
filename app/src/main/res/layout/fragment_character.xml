@@ -1,0 +1,138 @@
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.iliazusik.rickmortyapp.ui.character.CharacterFragment">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:fitsSystemWindows="true"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsing_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            app:contentScrim="?attr/colorPrimary"
+            app:expandedTitleMarginEnd="64dp"
+            app:expandedTitleMarginStart="48dp"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+            <ImageView
+                android:id="@+id/iv_avatar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true"
+                android:importantForAccessibility="no"
+                android:scaleType="centerCrop"
+                app:layout_collapseMode="parallax"
+                tools:src="@mipmap/ic_launcher" />
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_marginTop="-20dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_character_info"
+            android:backgroundTint="@color/bg_gray"
+            android:orientation="vertical"
+            android:paddingHorizontal="8dp">
+
+            <TextView
+                android:id="@+id/tv_character_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Character Name" />
+
+            <TextView
+                android:id="@+id/tv_character_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="4dp"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@id/tv_character_name"
+                app:layout_constraintTop_toBottomOf="@id/tv_character_name"
+                tools:drawableStartCompat="@drawable/ic_dot_unknown"
+                tools:text="Status - Type" />
+
+            <TextView
+                android:id="@+id/tv_last_location_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="26dp"
+                android:text="@string/last_known_location"
+                android:textColor="@color/text_gray"
+                app:layout_constraintStart_toStartOf="@id/tv_character_name"
+                app:layout_constraintTop_toBottomOf="@id/tv_character_status" />
+
+            <TextView
+                android:id="@+id/tv_last_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@id/tv_character_name"
+                app:layout_constraintTop_toBottomOf="@id/tv_t1"
+                tools:text="@string/last_known_location" />
+
+            <TextView
+                android:id="@+id/tv_first_seen_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="26dp"
+                android:text="@string/first_seen_in"
+                android:textColor="@color/text_gray"
+                app:layout_constraintStart_toStartOf="@id/tv_character_name"
+                app:layout_constraintTop_toBottomOf="@id/tv_last_location" />
+
+            <TextView
+                android:id="@+id/tv_first_seen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@id/tv_character_name"
+                app:layout_constraintTop_toBottomOf="@id/tv_t2"
+                tools:text="@string/first_seen_in" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_marginTop="26dp"
+                android:id="@+id/rv_episodes"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:itemCount="10"
+                tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_episode" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/anim_loading"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/loading_anim" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

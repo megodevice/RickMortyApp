@@ -2,6 +2,8 @@ package com.iliazusik.rickmortyapp.ui.characters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -10,7 +12,7 @@ import com.ilia_zusik.rickmortyapp.BuildConfig
 import com.ilia_zusik.rickmortyapp.R
 import com.ilia_zusik.rickmortyapp.databinding.ItemCharacterBinding
 import com.iliazusik.rickmortyapp.data.Character
-import com.iliazusik.rickmortyapp.data.EpisodeModel
+import com.iliazusik.rickmortyapp.data.Episode
 import com.iliazusik.rickmortyapp.data.network.CharacterApi
 import retrofit2.Call
 import retrofit2.Callback
@@ -18,8 +20,13 @@ import retrofit2.Response
 import javax.inject.Inject
 
 
-class CharactersRecyclerViewAdapter @Inject constructor(private val api: CharacterApi) :
+class CharactersRecyclerViewAdapter @Inject constructor(
+    private val api: CharacterApi
+) :
     ListAdapter<Character, CharactersRecyclerViewAdapter.CharacterViewHolder>(DIFF_UTIL_CALL_BACK) {
+
+    private val _onItemClick: MutableLiveData<String> = MutableLiveData()
+    fun getOnItemClickUrl(): LiveData<String> = _onItemClick
 
 
     private companion object {
@@ -52,25 +59,28 @@ class CharactersRecyclerViewAdapter @Inject constructor(private val api: Charact
         RecyclerView.ViewHolder(binding.root) {
 
         fun onBind(character: Character) {
+            binding.root.setOnClickListener {
+                _onItemClick.postValue(character.url)
+            }
             binding.apply {
                 tvCharacterName.text = character.name
 
                 if (character.firsSeenEpisodeName.isNullOrEmpty()) {
                     character.episode.getOrNull(0)?.apply {
-                        api.getSingleEpisode(this).enqueue(object : Callback<EpisodeModel> {
+                        api.getSingleEpisode(this).enqueue(object : Callback<Episode> {
                             override fun onResponse(
-                                episodeCall: Call<EpisodeModel>,
-                                episodeResponse: Response<EpisodeModel>
+                                episodeCall: Call<Episode>,
+                                episodeResponse: Response<Episode>
                             ) {
                                 if (episodeResponse.isSuccessful && episodeResponse.body() != null && episodeResponse.code() in 200..300) {
-                                    episodeResponse.body()?.let { episodeModel ->
-                                        character.firsSeenEpisodeName = episodeModel.name
-                                        tvFirstSeen.text = episodeModel.name
+                                    episodeResponse.body()?.let { episode ->
+                                        character.firsSeenEpisodeName = episode.name
+                                        tvFirstSeen.text = episode.name
                                     }
                                 }
                             }
 
-                            override fun onFailure(p0: Call<EpisodeModel>, p1: Throwable) {}
+                            override fun onFailure(p0: Call<Episode>, p1: Throwable) {}
                         })
                     }
                 } else {

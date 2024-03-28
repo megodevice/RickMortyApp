@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ilia_zusik.rickmortyapp.databinding.FragmentCharactersBinding
 import com.iliazusik.rickmortyapp.utils.Resource
@@ -16,7 +17,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class CharactersFragment : Fragment() {
 
-    private val viewModel: CharacterViewModel by viewModels()
+    private val viewModel: CharactersViewModel by viewModels()
 
     @Inject
     lateinit var charactersAdapter: CharactersRecyclerViewAdapter
@@ -50,6 +51,15 @@ class CharactersFragment : Fragment() {
 
 
     private fun observe() {
+
+        charactersAdapter.getOnItemClickUrl().observe(viewLifecycleOwner) {
+            findNavController().navigate(
+                CharactersFragmentDirections.actionCharactersFragmentToCharacterFragment(
+                    it
+                )
+            )
+        }
+
         viewModel.characters.observe(viewLifecycleOwner) {
             when (it) {
                 is Resource.Error -> {

@@ -9,5 +9,22 @@
         android:id="@+id/charactersFragment"
         android:name="com.iliazusik.rickmortyapp.ui.characters.CharactersFragment"
         android:label="fragment_characters"
-        tools:layout="@layout/fragment_characters" />
+        tools:layout="@layout/fragment_characters">
+        <action
+            android:id="@+id/action_charactersFragment_to_characterFragment"
+            app:destination="@id/characterFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/characterFragment"
+        android:name="com.iliazusik.rickmortyapp.ui.character.CharacterFragment"
+        android:label="fragment_character"
+        tools:layout="@layout/fragment_character">
+        <argument
+            android:name="character_url"
+            app:argType="string"
+            app:nullable="false" />
+        <action
+            android:id="@+id/action_characterFragment_to_charactersFragment"
+            app:destination="@id/charactersFragment" />
+    </fragment>
 </navigation>

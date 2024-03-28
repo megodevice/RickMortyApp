@@ -1,7 +1,12 @@
 package com.iliazusik.rickmortyapp.data
 
-data class EpisodeModel(
-    val air_date: String,
+import com.google.gson.annotations.SerializedName
+
+class EpisodesModel : ArrayList<Episode>()
+
+data class Episode(
+    @SerializedName("air_date")
+    val airDate: String,
     val characters: List<String>,
     val created: String,
     val episode: String,
