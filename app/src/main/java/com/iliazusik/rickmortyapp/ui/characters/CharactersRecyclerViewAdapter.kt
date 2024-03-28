@@ -17,10 +17,9 @@ import com.iliazusik.rickmortyapp.data.network.CharacterApi
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import javax.inject.Inject
 
 
-class CharactersRecyclerViewAdapter @Inject constructor(
+class CharactersRecyclerViewAdapter(
     private val api: CharacterApi
 ) :
     ListAdapter<Character, CharactersRecyclerViewAdapter.CharacterViewHolder>(DIFF_UTIL_CALL_BACK) {

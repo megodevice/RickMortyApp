@@ -6,21 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ilia_zusik.rickmortyapp.databinding.FragmentCharactersBinding
 import com.iliazusik.rickmortyapp.utils.Resource
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-@AndroidEntryPoint
+
 class CharactersFragment : Fragment() {
 
-    private val viewModel: CharactersViewModel by viewModels()
+    private val viewModel: CharactersViewModel by viewModel()
 
-    @Inject
-    lateinit var charactersAdapter: CharactersRecyclerViewAdapter
+    private val charactersAdapter: CharactersRecyclerViewAdapter by inject()
 
     private var _binding: FragmentCharactersBinding? = null
     private val binding get() = _binding!!

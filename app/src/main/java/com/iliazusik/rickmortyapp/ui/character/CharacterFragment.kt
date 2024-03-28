@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,16 +16,15 @@ import com.ilia_zusik.rickmortyapp.R
 import com.ilia_zusik.rickmortyapp.databinding.FragmentCharacterBinding
 import com.iliazusik.rickmortyapp.data.Character
 import com.iliazusik.rickmortyapp.utils.Resource
-import dagger.hilt.android.AndroidEntryPoint
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-@AndroidEntryPoint
+
 class CharacterFragment : Fragment() {
-
 
     private var _binding: FragmentCharacterBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: CharacterViewModel by viewModels()
+    private val viewModel: CharacterViewModel by viewModel()
 
     private val args: CharacterFragmentArgs by navArgs()
 
@@ -87,9 +85,11 @@ class CharacterFragment : Fragment() {
                 is Resource.Error -> {
                     Toast.makeText(requireContext(), episodes.message, Toast.LENGTH_LONG).show()
                 }
+
                 is Resource.Loading -> {
                     binding.animLoadingEpisodes.visibility = View.VISIBLE
                 }
+
                 is Resource.Success -> {
                     episodes.data?.let {
                         binding.tvFirstSeen.text = it[0].name

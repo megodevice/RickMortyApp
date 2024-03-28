@@ -1,8 +1,6 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    alias(libs.plugins.hiltAndroidPlugin)
-    id("kotlin-kapt")
     id("androidx.navigation.safeargs.kotlin")
 }
 
@@ -74,11 +72,6 @@ dependencies {
     // coil
     implementation(libs.coil)
 
-    // hilt
-    implementation(libs.hilt.android)
-    annotationProcessor(libs.hilt.compiler)
-    kapt(libs.hilt.compiler)
-
     // fragmentX activityX
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.activity.ktx)
@@ -89,8 +82,7 @@ dependencies {
     // Navigation Component
     implementation (libs.androidx.navigation.fragment.ktx)
     implementation (libs.androidx.navigation.ui.ktx)
-}
 
-kapt {
-    correctErrorTypes = true
+    // koin
+    implementation(libs.koin.android)
 }

@@ -11,9 +11,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.lang.Exception
-import javax.inject.Inject
 
-class CharacterRepository @Inject constructor(
+class CharacterRepository(
     private val api: CharacterApi
 ) {
 

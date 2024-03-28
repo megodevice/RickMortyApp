@@ -2,7 +2,6 @@
 plugins {
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.jetbrainsKotlinAndroid) apply false
-    alias(libs.plugins.hiltAndroidPlugin) apply false
 }
 
 buildscript {
@@ -10,7 +9,6 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath (libs.hilt.android.gradle.plugin)
         classpath(libs.androidx.navigation.safe.args.gradle.plugin)
     }
 }

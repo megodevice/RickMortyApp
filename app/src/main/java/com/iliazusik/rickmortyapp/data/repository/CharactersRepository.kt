@@ -9,9 +9,8 @@ import com.iliazusik.rickmortyapp.utils.Resource
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import javax.inject.Inject
 
-class CharactersRepository @Inject constructor(
+class CharactersRepository(
     private val api: CharacterApi
 ) {
 
