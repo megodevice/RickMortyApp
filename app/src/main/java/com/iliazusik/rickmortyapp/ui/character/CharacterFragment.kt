@@ -16,7 +16,6 @@ import com.ilia_zusik.rickmortyapp.BuildConfig
 import com.ilia_zusik.rickmortyapp.R
 import com.ilia_zusik.rickmortyapp.databinding.FragmentCharacterBinding
 import com.iliazusik.rickmortyapp.data.Character
-import com.iliazusik.rickmortyapp.data.Episode
 import com.iliazusik.rickmortyapp.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -84,19 +83,29 @@ class CharacterFragment : Fragment() {
         }
 
         viewModel.episodes.observe(viewLifecycleOwner) { episodes ->
-            setAllEpisodes(episodes)
+            when (episodes) {
+                is Resource.Error -> {
+                    Toast.makeText(requireContext(), episodes.message, Toast.LENGTH_LONG).show()
+                }
+                is Resource.Loading -> {
+                    binding.animLoadingEpisodes.visibility = View.VISIBLE
+                }
+                is Resource.Success -> {
+                    episodes.data?.let {
+                        binding.tvFirstSeen.text = it[0].name
+                        episodesAdapter.submitList(it)
+                    }
+                }
+            }
+            if (episodes !is Resource.Loading) {
+                binding.animLoadingEpisodes.visibility = View.GONE
+            }
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
-    }
-
-
-    private fun setAllEpisodes(episodes: List<Episode>) {
-        binding.tvFirstSeen.text = episodes[0].name
-        episodesAdapter.submitList(episodes)
     }
 
     private fun setBasicCharacterInfo(character: Character) {

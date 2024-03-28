@@ -18,10 +18,10 @@ class CharacterRepository @Inject constructor(
 ) {
 
     private val character = MutableLiveData<Resource<Character>>()
-    private val episodes = MutableLiveData<List<Episode>>()
+    private val episodes = MutableLiveData<Resource<List<Episode>>>()
 
     fun getCharacter(): LiveData<Resource<Character>> = character
-    fun getEpisodes(): LiveData<List<Episode>> = episodes
+    fun getEpisodes(): LiveData<Resource<List<Episode>>> = episodes
 
     fun fetchCharacter(url: String) {
         character.postValue(Resource.Loading())
@@ -44,6 +44,8 @@ class CharacterRepository @Inject constructor(
     }
 
     fun fetchEpisodes(urls: List<String>) {
+        episodes.postValue(Resource.Loading())
+
         if (urls.isNotEmpty()) {
             var sumEpisodesUrl: String = urls[0]
             if (urls.size > 1) {
@@ -70,12 +72,13 @@ class CharacterRepository @Inject constructor(
                     ) {
                         if (response.isSuccessful && response.body() != null && response.code() in 200..300) {
                             response.body()?.let { result ->
-                                episodes.postValue(result)
+                                episodes.postValue(Resource.Success(result))
                             }
                         }
                     }
 
-                    override fun onFailure(p0: Call<EpisodesModel>, p1: Throwable) {
+                    override fun onFailure(p0: Call<EpisodesModel>, e: Throwable) {
+                        episodes.postValue(Resource.Error(e.localizedMessage ?: "Unknown error"))
                     }
                 })
             } else {
@@ -86,12 +89,14 @@ class CharacterRepository @Inject constructor(
                     ) {
                         if (episodeResponse.isSuccessful && episodeResponse.body() != null && episodeResponse.code() in 200..300) {
                             episodeResponse.body()?.let { episode ->
-                                episodes.postValue(listOf(episode))
+                                episodes.postValue(Resource.Success(listOf(episode)))
                             }
                         }
                     }
 
-                    override fun onFailure(p0: Call<Episode>, p1: Throwable) {}
+                    override fun onFailure(p0: Call<Episode>, e: Throwable) {
+                        episodes.postValue(Resource.Error(e.localizedMessage ?: "Unknown error"))
+                    }
                 })
             }
         }

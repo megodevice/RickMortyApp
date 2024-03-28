@@ -14,7 +14,7 @@ class CharacterViewModel @Inject constructor(private val repository: CharacterRe
     ViewModel() {
 
     val character: LiveData<Resource<Character>> = repository.getCharacter()
-    val episodes: LiveData<List<Episode>> = repository.getEpisodes()
+    val episodes: LiveData<Resource<List<Episode>>> = repository.getEpisodes()
 
     fun getCharacter(url: String) {
         repository.fetchCharacter(url)

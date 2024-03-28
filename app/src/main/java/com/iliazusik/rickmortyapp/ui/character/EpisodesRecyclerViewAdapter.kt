@@ -49,15 +49,15 @@ class EpisodesRecyclerViewAdapter :
         ViewHolder(binding.root) {
 
         private var isClicked: Boolean = false
-        private var ce: Pair<String, String> = Pair(String(), String())
+        private var seasonEpisode: Pair<String, String> = Pair(String(), String())
 
         fun onBind(episode: Episode) {
-            ce = getSeasonEpisodeNumbers(episode.episode)
+            seasonEpisode = getSeasonEpisodeNumbers(episode.episode)
             binding.apply {
-                (root.context.getString(R.string.season) + ' ' + ce.first).apply {
+                (root.context.getString(R.string.season) + ' ' + seasonEpisode.first).apply {
                     tvSeasonNumber.text = this
                 }
-                (root.context.getString(R.string.episode) + ' ' + ce.second).apply {
+                (root.context.getString(R.string.episode) + ' ' + seasonEpisode.second).apply {
                     tvEpisodeNumber.text = this
                 }
 
@@ -119,7 +119,6 @@ class EpisodesRecyclerViewAdapter :
                     }
                     isClicked = !isClicked
                 }
-
             }
         }
     }
