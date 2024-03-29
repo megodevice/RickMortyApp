@@ -6,8 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
-import androidx.navigation.fragment.findNavController
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
@@ -42,7 +41,6 @@ class CharacterFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initBackStack()
         viewModel.getCharacter(args.characterUrl)
         setEpisodesRV()
         observe()
@@ -64,9 +62,7 @@ class CharacterFragment : Fragment() {
                     Toast.makeText(requireContext(), resource.message, Toast.LENGTH_LONG).show()
                 }
 
-                is Resource.Loading -> {
-                    binding.animLoading.visibility = View.VISIBLE
-                }
+                is Resource.Loading -> {}
 
                 is Resource.Success -> {
                     resource.data?.let {
@@ -75,9 +71,7 @@ class CharacterFragment : Fragment() {
                     }
                 }
             }
-            if (resource !is Resource.Loading) {
-                binding.animLoading.visibility = View.GONE
-            }
+            binding.animLoading.isVisible = resource is Resource.Loading
         }
 
         viewModel.episodes.observe(viewLifecycleOwner) { episodes ->
@@ -86,9 +80,7 @@ class CharacterFragment : Fragment() {
                     Toast.makeText(requireContext(), episodes.message, Toast.LENGTH_LONG).show()
                 }
 
-                is Resource.Loading -> {
-                    binding.animLoadingEpisodes.visibility = View.VISIBLE
-                }
+                is Resource.Loading -> {}
 
                 is Resource.Success -> {
                     episodes.data?.let {
@@ -97,9 +89,7 @@ class CharacterFragment : Fragment() {
                     }
                 }
             }
-            if (episodes !is Resource.Loading) {
-                binding.animLoadingEpisodes.visibility = View.GONE
-            }
+            binding.animLoadingEpisodes.isVisible = episodes is Resource.Loading
         }
     }
 
@@ -136,14 +126,5 @@ class CharacterFragment : Fragment() {
                 }
             }
         }
-    }
-
-    private fun initBackStack() {
-        requireActivity().onBackPressedDispatcher
-            .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    findNavController().navigate(CharacterFragmentDirections.actionCharacterFragmentToCharactersFragment())
-                }
-            })
     }
 }

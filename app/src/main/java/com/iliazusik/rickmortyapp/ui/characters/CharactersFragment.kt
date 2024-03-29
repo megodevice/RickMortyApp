@@ -5,11 +5,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ilia_zusik.rickmortyapp.databinding.FragmentCharactersBinding
-import com.iliazusik.rickmortyapp.utils.Resource
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -18,7 +21,7 @@ class CharactersFragment : Fragment() {
 
     private val viewModel: CharactersViewModel by viewModel()
 
-    private val charactersAdapter: CharactersRecyclerViewAdapter by inject()
+    private val charactersPagingAdapter: CharactersPagingAdapter by inject()
 
     private var _binding: FragmentCharactersBinding? = null
     private val binding get() = _binding!!
@@ -35,11 +38,10 @@ class CharactersFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setCharactersRV()
         observe()
-        viewModel.getCharacters()
     }
 
     private fun setCharactersRV() = with(binding.rvCharacters) {
-        adapter = charactersAdapter
+        adapter = charactersPagingAdapter
         layoutManager = LinearLayoutManager(
             requireContext(),
             LinearLayoutManager.VERTICAL,
@@ -50,7 +52,7 @@ class CharactersFragment : Fragment() {
 
     private fun observe() {
 
-        charactersAdapter.getOnItemClickUrl().observe(viewLifecycleOwner) {
+        charactersPagingAdapter.getOnItemClickUrl().observe(viewLifecycleOwner) {
             findNavController().navigate(
                 CharactersFragmentDirections.actionCharactersFragmentToCharacterFragment(
                     it
@@ -58,22 +60,15 @@ class CharactersFragment : Fragment() {
             )
         }
 
-        viewModel.characters.observe(viewLifecycleOwner) {
-            when (it) {
-                is Resource.Error -> {
-                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
-                }
+        viewModel.characterList.observe(viewLifecycleOwner) {
 
-                is Resource.Loading -> {
-                    binding.animLoading.visibility = View.VISIBLE
-                }
+            charactersPagingAdapter.submitData(viewLifecycleOwner.lifecycle, it)
+        }
 
-                is Resource.Success -> {
-                    charactersAdapter.submitList(it.data)
-                }
-            }
-            if (it !is Resource.Loading) {
-                binding.animLoading.visibility = View.GONE
+        lifecycleScope.launch {
+            charactersPagingAdapter.loadStateFlow.collectLatest {
+                binding.animLoading.isVisible =
+                    (it.refresh is LoadState.Loading) || (it.append is LoadState.Loading)
             }
         }
     }
@@ -82,5 +77,4 @@ class CharactersFragment : Fragment() {
         super.onDestroy()
         _binding = null
     }
-
 }

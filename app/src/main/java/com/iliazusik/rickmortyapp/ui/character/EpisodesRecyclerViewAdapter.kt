@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -66,34 +67,22 @@ class EpisodesRecyclerViewAdapter :
             }
         }
 
-        private fun getSeasonEpisodeNumbers(season: String) : Pair<String, String> {
+        private fun getSeasonEpisodeNumbers(season: String): Pair<String, String> {
             val s = season.lastIndexOf('S')
             val e = season.lastIndexOf('E')
             var sNumber = season.substring(s + 1, e)
             var eNumber = season.substring(e + 1, season.length)
-            if (sNumber.length > 1 && sNumber.first() == '0')
-                sNumber = sNumber.removeRange(0,1)
-            if (eNumber.length > 1 && eNumber.first() == '0')
-                eNumber = eNumber.removeRange(0,1)
+            if (sNumber.length > 1 && sNumber.first() == '0') sNumber = sNumber.removeRange(0, 1)
+            if (eNumber.length > 1 && eNumber.first() == '0') eNumber = eNumber.removeRange(0, 1)
             return Pair(sNumber, eNumber)
         }
 
         init {
             val rotateTo180 = RotateAnimation(
-                0f,
-                -180f,
-                Animation.RELATIVE_TO_SELF,
-                0.5f,
-                Animation.RELATIVE_TO_SELF,
-                0.5f
+                0f, -180f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f
             )
             val rotateFrom180 = RotateAnimation(
-                -180f,
-                0f,
-                Animation.RELATIVE_TO_SELF,
-                0.5f,
-                Animation.RELATIVE_TO_SELF,
-                0.5f
+                -180f, 0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f
             )
             rotateTo180.fillAfter = true
             rotateTo180.setDuration(300)
@@ -104,22 +93,21 @@ class EpisodesRecyclerViewAdapter :
 
             binding.root.setOnClickListener {
                 binding.apply {
-                    if (isClicked) {
-                        tvAirDate.visibility = View.GONE
-                        tvAirDateLabel.visibility = View.GONE
-                        tvEpisodeName.visibility = View.GONE
-                        tvEpisodeNameLabel.visibility = View.GONE
-                        ivArrow.startAnimation(rotateFrom180)
-                    } else {
-                        tvAirDate.visibility = View.VISIBLE
-                        tvAirDateLabel.visibility = View.VISIBLE
-                        tvEpisodeName.visibility = View.VISIBLE
-                        tvEpisodeNameLabel.visibility = View.VISIBLE
-                        ivArrow.startAnimation(rotateTo180)
-                    }
+                    if (isClicked) ivArrow.startAnimation(rotateFrom180)
+                    else ivArrow.startAnimation(rotateTo180)
+                    changeVisibility(
+                        !isClicked, tvAirDate, tvAirDateLabel, tvEpisodeName, tvEpisodeNameLabel
+                    )
                     isClicked = !isClicked
                 }
             }
         }
+
+        private fun changeVisibility(isVisible: Boolean, vararg views: View) {
+            for (view in views) {
+                view.isVisible = isVisible
+            }
+        }
+
     }
 }

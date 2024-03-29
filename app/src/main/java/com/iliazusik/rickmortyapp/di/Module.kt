@@ -1,11 +1,13 @@
 package com.iliazusik.rickmortyapp.di
 
 import com.ilia_zusik.rickmortyapp.BuildConfig
+import com.iliazusik.rickmortyapp.data.CharactersPagingSource
 import com.iliazusik.rickmortyapp.data.network.CharacterApi
 import com.iliazusik.rickmortyapp.data.repository.CharacterRepository
 import com.iliazusik.rickmortyapp.data.repository.CharactersRepository
 import com.iliazusik.rickmortyapp.ui.character.CharacterViewModel
 import com.iliazusik.rickmortyapp.ui.character.EpisodesRecyclerViewAdapter
+import com.iliazusik.rickmortyapp.ui.characters.CharactersPagingAdapter
 import com.iliazusik.rickmortyapp.ui.characters.CharactersRecyclerViewAdapter
 import com.iliazusik.rickmortyapp.ui.characters.CharactersViewModel
 import okhttp3.OkHttpClient
@@ -25,8 +27,9 @@ val networkModule = module {
 }
 
 val repositoryModule = module {
-    factory { provideCharacterRepository(get()) }
-    factory { provideCharactersRepository(get()) }
+    single { provideCharacterRepository(get()) }
+    single { provideCharactersRepository(get()) }
+    single { provideCharacterPagingSource(get()) }
 }
 
 val viewModelModule = module {
@@ -37,10 +40,14 @@ val viewModelModule = module {
 val recyclerViewAdapterModule = module {
     factory { provideCharacterAdapter(get()) }
     factory { provideEpisodesAdapter() }
+    factory { provideCharactersPagingAdapter(get()) }
 }
 
 val modules =
     listOf(networkModule, repositoryModule, viewModelModule, recyclerViewAdapterModule)
+
+fun provideCharacterPagingSource(api: CharacterApi) =
+    CharactersPagingSource(api)
 
 fun provideCharacterViewModel(repository: CharacterRepository) =
     CharacterViewModel(repository)
@@ -51,14 +58,17 @@ fun provideCharactersViewModel(repository: CharactersRepository) =
 fun provideCharacterRepository(api: CharacterApi) =
     CharacterRepository(api)
 
-fun provideCharactersRepository(api: CharacterApi) =
-    CharactersRepository(api)
+fun provideCharactersRepository(charactersPagingSource: CharactersPagingSource) =
+    CharactersRepository(charactersPagingSource)
 
 fun provideEpisodesAdapter() =
     EpisodesRecyclerViewAdapter()
 
 fun provideCharacterAdapter(api: CharacterApi) =
     CharactersRecyclerViewAdapter(api)
+
+fun provideCharactersPagingAdapter(api: CharacterApi) =
+    CharactersPagingAdapter(api)
 
 fun provideApi(retrofit: Retrofit): CharacterApi =
     retrofit.create(CharacterApi::class.java)

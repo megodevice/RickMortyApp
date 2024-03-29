@@ -23,8 +23,5 @@
             android:name="character_url"
             app:argType="string"
             app:nullable="false" />
-        <action
-            android:id="@+id/action_characterFragment_to_charactersFragment"
-            app:destination="@id/charactersFragment" />
     </fragment>
 </navigation>
