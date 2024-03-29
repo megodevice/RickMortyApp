@@ -85,4 +85,7 @@ dependencies {
 
     // koin
     implementation(libs.koin.android)
+
+    // paging3
+    implementation(libs.androidx.paging.runtime.ktx)
 }
