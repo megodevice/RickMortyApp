@@ -2,8 +2,6 @@ package com.iliazusik.rickmortyapp.ui.characters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -47,15 +45,19 @@ class CharactersPagingAdapter(
         )
     }
 
-    private val _onItemClick: MutableLiveData<String> = MutableLiveData()
-    fun getOnItemClickUrl(): LiveData<String> = _onItemClick
+    fun setOnItemClickListener(onClick: (String) -> Unit) {
+        onItemClick = onClick
+    }
+    private var onItemClick: ((String) -> Unit)? = null
 
     inner class CharacterViewHolder(private val binding: ItemCharacterBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun onBind(character: Character) {
             binding.root.setOnClickListener {
-                _onItemClick.postValue(character.url)
+                onItemClick?.let {
+                    it(character.url)
+                }
             }
             binding.apply {
                 tvCharacterName.text = character.name

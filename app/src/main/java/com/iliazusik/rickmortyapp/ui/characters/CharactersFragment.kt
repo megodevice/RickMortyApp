@@ -36,29 +36,28 @@ class CharactersFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setCharactersRV()
+        setCharactersRecyclerView()
         observe()
     }
 
-    private fun setCharactersRV() = with(binding.rvCharacters) {
+    private fun setCharactersRecyclerView() = with(binding.rvCharacters) {
         adapter = charactersPagingAdapter
         layoutManager = LinearLayoutManager(
             requireContext(),
             LinearLayoutManager.VERTICAL,
             false
         )
-    }
-
-
-    private fun observe() {
-
-        charactersPagingAdapter.getOnItemClickUrl().observe(viewLifecycleOwner) {
+        charactersPagingAdapter.setOnItemClickListener {
             findNavController().navigate(
                 CharactersFragmentDirections.actionCharactersFragmentToCharacterFragment(
                     it
                 )
             )
         }
+    }
+
+
+    private fun observe() {
 
         viewModel.characterList.observe(viewLifecycleOwner) {
 
