@@ -5,7 +5,6 @@ import com.iliazusik.rickmortyapp.data.Character
 import com.iliazusik.rickmortyapp.data.CharactersModel
 import com.iliazusik.rickmortyapp.data.Episode
 import com.iliazusik.rickmortyapp.data.EpisodesModel
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -19,12 +18,12 @@ interface CharacterApi {
     ): Response<CharactersModel>
 
     @GET
-    fun getSingleEpisode(@Url url: String): Call<Episode>
+    suspend fun getSingleEpisode(@Url url: String): Response<Episode>
 
     @GET
-    fun getMultiplyEpisode(@Url url: String): Call<EpisodesModel>
+    suspend fun getMultiplyEpisode(@Url url: String): Response<EpisodesModel>
 
     @GET
-    fun getSingleCharacter(@Url url: String): Call<Character>
+    suspend fun getSingleCharacter(@Url url: String): Response<Character>
 
 }

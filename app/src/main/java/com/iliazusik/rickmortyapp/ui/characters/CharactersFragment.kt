@@ -60,7 +60,6 @@ class CharactersFragment : Fragment() {
     private fun observe() {
 
         viewModel.characterList.observe(viewLifecycleOwner) {
-
             charactersPagingAdapter.submitData(viewLifecycleOwner.lifecycle, it)
         }
 

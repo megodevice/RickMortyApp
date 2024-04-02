@@ -1,18 +1,17 @@
 package com.iliazusik.rickmortyapp.ui.character
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.ilia_zusik.rickmortyapp.R
 import com.ilia_zusik.rickmortyapp.databinding.ItemEpisodeBinding
 import com.iliazusik.rickmortyapp.data.Episode
+import com.iliazusik.rickmortyapp.ui.UiHelper
 
 
 class EpisodesRecyclerViewAdapter :
@@ -53,7 +52,7 @@ class EpisodesRecyclerViewAdapter :
         private var seasonEpisode: Pair<String, String> = Pair(String(), String())
 
         fun onBind(episode: Episode) {
-            seasonEpisode = getSeasonEpisodeNumbers(episode.episode)
+            seasonEpisode = UiHelper.getSeasonEpisodeNumbers(episode.episode)
             binding.apply {
                 (root.context.getString(R.string.season) + ' ' + seasonEpisode.first).apply {
                     tvSeasonNumber.text = this
@@ -65,16 +64,6 @@ class EpisodesRecyclerViewAdapter :
                 tvEpisodeName.text = episode.name
                 tvAirDate.text = episode.airDate
             }
-        }
-
-        private fun getSeasonEpisodeNumbers(season: String): Pair<String, String> {
-            val s = season.lastIndexOf('S')
-            val e = season.lastIndexOf('E')
-            var sNumber = season.substring(s + 1, e)
-            var eNumber = season.substring(e + 1, season.length)
-            if (sNumber.length > 1 && sNumber.first() == '0') sNumber = sNumber.removeRange(0, 1)
-            if (eNumber.length > 1 && eNumber.first() == '0') eNumber = eNumber.removeRange(0, 1)
-            return Pair(sNumber, eNumber)
         }
 
         init {
@@ -90,24 +79,16 @@ class EpisodesRecyclerViewAdapter :
             rotateFrom180.fillAfter = true
             rotateFrom180.setDuration(300)
             rotateFrom180.interpolator = linearInterpolator
-
             binding.root.setOnClickListener {
                 binding.apply {
                     if (isClicked) ivArrow.startAnimation(rotateFrom180)
                     else ivArrow.startAnimation(rotateTo180)
-                    changeVisibility(
+                    UiHelper.changeVisibility(
                         !isClicked, tvAirDate, tvAirDateLabel, tvEpisodeName, tvEpisodeNameLabel
                     )
                     isClicked = !isClicked
                 }
             }
         }
-
-        private fun changeVisibility(isVisible: Boolean, vararg views: View) {
-            for (view in views) {
-                view.isVisible = isVisible
-            }
-        }
-
     }
 }

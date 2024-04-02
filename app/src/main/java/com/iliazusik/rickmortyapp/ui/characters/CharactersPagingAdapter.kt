@@ -2,19 +2,16 @@ package com.iliazusik.rickmortyapp.ui.characters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.liveData
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.ilia_zusik.rickmortyapp.BuildConfig
-import com.ilia_zusik.rickmortyapp.R
 import com.ilia_zusik.rickmortyapp.databinding.ItemCharacterBinding
 import com.iliazusik.rickmortyapp.data.Character
-import com.iliazusik.rickmortyapp.data.Episode
 import com.iliazusik.rickmortyapp.data.network.CharacterApi
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.iliazusik.rickmortyapp.ui.UiHelper
+import kotlinx.coroutines.Dispatchers
 
 class CharactersPagingAdapter(
     private val api: CharacterApi
@@ -48,6 +45,7 @@ class CharactersPagingAdapter(
     fun setOnItemClickListener(onClick: (String) -> Unit) {
         onItemClick = onClick
     }
+
     private var onItemClick: ((String) -> Unit)? = null
 
     inner class CharacterViewHolder(private val binding: ItemCharacterBinding) :
@@ -63,22 +61,25 @@ class CharactersPagingAdapter(
                 tvCharacterName.text = character.name
 
                 if (character.firsSeenEpisodeName.isNullOrEmpty()) {
-                    character.episode.getOrNull(0)?.apply {
-                        api.getSingleEpisode(this).enqueue(object : Callback<Episode> {
-                            override fun onResponse(
-                                episodeCall: Call<Episode>, episodeResponse: Response<Episode>
-                            ) {
-                                if (episodeResponse.isSuccessful && episodeResponse.body() != null && episodeResponse.code() in 200..300) {
-                                    episodeResponse.body()?.let { episode ->
-                                        character.firsSeenEpisodeName = episode.name
-                                        tvFirstSeen.text = episode.name
+                    liveData<String>(Dispatchers.IO) {
+                        try {
+                            character.episode.getOrNull(0)?.apply {
+                                api.getSingleEpisode(this).let { episodeResponse ->
+                                    if (episodeResponse.isSuccessful && episodeResponse.body() != null && episodeResponse.code() in 200..300) {
+                                        episodeResponse.body()?.let { episode ->
+                                            character.firsSeenEpisodeName = episode.name
+                                            tvFirstSeen.text = episode.name
+                                        }
                                     }
                                 }
                             }
+                        } catch (_: Exception) {
 
-                            override fun onFailure(p0: Call<Episode>, p1: Throwable) {
-                            }
-                        })
+                        }
+                    }.apply {
+                        this.value?.let {
+
+                        }
                     }
                 } else {
                     tvFirstSeen.text = character.firsSeenEpisodeName
@@ -89,25 +90,7 @@ class CharactersPagingAdapter(
                     tvCharacterStatus.text = this
                 }
                 ivAvatar.load(character.image)
-                when (character.status) {
-                    BuildConfig.ALIVE -> {
-                        tvCharacterStatus.setCompoundDrawablesWithIntrinsicBounds(
-                            R.drawable.ic_dot_alive, 0, 0, 0
-                        )
-                    }
-
-                    BuildConfig.DEATH -> {
-                        tvCharacterStatus.setCompoundDrawablesWithIntrinsicBounds(
-                            R.drawable.ic_dot_death, 0, 0, 0
-                        )
-                    }
-
-                    else -> {
-                        tvCharacterStatus.setCompoundDrawablesWithIntrinsicBounds(
-                            R.drawable.ic_dot_unknown, 0, 0, 0
-                        )
-                    }
-                }
+                UiHelper.setStatusDot(character.status, tvCharacterStatus)
             }
         }
     }

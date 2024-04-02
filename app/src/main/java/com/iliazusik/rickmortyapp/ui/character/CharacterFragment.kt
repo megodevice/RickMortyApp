@@ -10,10 +10,9 @@ import androidx.core.view.isVisible
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
-import com.ilia_zusik.rickmortyapp.BuildConfig
-import com.ilia_zusik.rickmortyapp.R
 import com.ilia_zusik.rickmortyapp.databinding.FragmentCharacterBinding
 import com.iliazusik.rickmortyapp.data.Character
+import com.iliazusik.rickmortyapp.ui.UiHelper
 import com.iliazusik.rickmortyapp.utils.Resource
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -56,7 +55,7 @@ class CharacterFragment : Fragment() {
     }
 
     private fun observe() {
-        viewModel.character.observe(viewLifecycleOwner) { resource ->
+        viewModel.getCharacter(args.characterUrl).observe(viewLifecycleOwner) { resource ->
             when (resource) {
                 is Resource.Error -> {
                     Toast.makeText(requireContext(), resource.message, Toast.LENGTH_LONG).show()
@@ -65,31 +64,29 @@ class CharacterFragment : Fragment() {
                 is Resource.Loading -> {}
 
                 is Resource.Success -> {
-                    resource.data?.let {
-                        setBasicCharacterInfo(it)
-                        viewModel.getEpisodes(it.episode)
+                    resource.data?.let { character ->
+                        setBasicCharacterInfo(character)
+                        viewModel.getEpisodes(character.episode).observe(viewLifecycleOwner) { episodes ->
+                            when (episodes) {
+                                is Resource.Error -> {
+                                    Toast.makeText(requireContext(), episodes.message, Toast.LENGTH_LONG).show()
+                                }
+
+                                is Resource.Loading -> {}
+
+                                is Resource.Success -> {
+                                    episodes.data?.let {episodesList ->
+                                        binding.tvFirstSeen.text = episodesList[0].name
+                                        episodesAdapter.submitList(episodesList)
+                                    }
+                                }
+                            }
+                            binding.animLoadingEpisodes.isVisible = episodes is Resource.Loading
+                        }
                     }
                 }
             }
             binding.animLoading.isVisible = resource is Resource.Loading
-        }
-
-        viewModel.episodes.observe(viewLifecycleOwner) { episodes ->
-            when (episodes) {
-                is Resource.Error -> {
-                    Toast.makeText(requireContext(), episodes.message, Toast.LENGTH_LONG).show()
-                }
-
-                is Resource.Loading -> {}
-
-                is Resource.Success -> {
-                    episodes.data?.let {
-                        binding.tvFirstSeen.text = it[0].name
-                        episodesAdapter.submitList(it)
-                    }
-                }
-            }
-            binding.animLoadingEpisodes.isVisible = episodes is Resource.Loading
         }
     }
 
@@ -106,25 +103,7 @@ class CharacterFragment : Fragment() {
                 tvCharacterStatus.text = this
             }
             ivAvatar.load(character.image)
-            when (character.status) {
-                BuildConfig.ALIVE -> {
-                    tvCharacterStatus.setCompoundDrawablesWithIntrinsicBounds(
-                        R.drawable.ic_dot_alive, 0, 0, 0
-                    )
-                }
-
-                BuildConfig.DEATH -> {
-                    tvCharacterStatus.setCompoundDrawablesWithIntrinsicBounds(
-                        R.drawable.ic_dot_death, 0, 0, 0
-                    )
-                }
-
-                else -> {
-                    tvCharacterStatus.setCompoundDrawablesWithIntrinsicBounds(
-                        R.drawable.ic_dot_unknown, 0, 0, 0
-                    )
-                }
-            }
+            UiHelper.setStatusDot(character.status, tvCharacterStatus)
         }
     }
 }

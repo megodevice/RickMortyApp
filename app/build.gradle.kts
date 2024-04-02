@@ -88,4 +88,7 @@ dependencies {
 
     // paging3
     implementation(libs.androidx.paging.runtime.ktx)
+
+    // coroutines
+    implementation(libs.kotlinx.coroutines.android)
 }

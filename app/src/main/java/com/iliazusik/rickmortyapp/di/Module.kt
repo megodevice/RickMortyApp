@@ -8,7 +8,6 @@ import com.iliazusik.rickmortyapp.data.repository.CharactersRepository
 import com.iliazusik.rickmortyapp.ui.character.CharacterViewModel
 import com.iliazusik.rickmortyapp.ui.character.EpisodesRecyclerViewAdapter
 import com.iliazusik.rickmortyapp.ui.characters.CharactersPagingAdapter
-import com.iliazusik.rickmortyapp.ui.characters.CharactersRecyclerViewAdapter
 import com.iliazusik.rickmortyapp.ui.characters.CharactersViewModel
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -38,7 +37,6 @@ val viewModelModule = module {
 }
 
 val recyclerViewAdapterModule = module {
-    factory { provideCharacterAdapter(get()) }
     factory { provideEpisodesAdapter() }
     factory { provideCharactersPagingAdapter(get()) }
 }
@@ -64,8 +62,6 @@ fun provideCharactersRepository(charactersPagingSource: CharactersPagingSource) 
 fun provideEpisodesAdapter() =
     EpisodesRecyclerViewAdapter()
 
-fun provideCharacterAdapter(api: CharacterApi) =
-    CharactersRecyclerViewAdapter(api)
 
 fun provideCharactersPagingAdapter(api: CharacterApi) =
     CharactersPagingAdapter(api)
