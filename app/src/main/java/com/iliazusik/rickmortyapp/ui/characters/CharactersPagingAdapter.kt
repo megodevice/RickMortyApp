@@ -10,6 +10,7 @@ import coil.load
 import com.ilia_zusik.rickmortyapp.databinding.ItemCharacterBinding
 import com.iliazusik.rickmortyapp.data.Character
 import com.iliazusik.rickmortyapp.data.network.CharacterApi
+import com.iliazusik.rickmortyapp.data.repository.BaseRepository
 import com.iliazusik.rickmortyapp.ui.UiHelper
 import kotlinx.coroutines.Dispatchers
 
@@ -61,25 +62,17 @@ class CharactersPagingAdapter(
                 tvCharacterName.text = character.name
 
                 if (character.firsSeenEpisodeName.isNullOrEmpty()) {
-                    liveData<String>(Dispatchers.IO) {
+                    liveData(Dispatchers.IO) {
                         try {
                             character.episode.getOrNull(0)?.apply {
-                                api.getSingleEpisode(this).let { episodeResponse ->
-                                    if (episodeResponse.isSuccessful && episodeResponse.body() != null && episodeResponse.code() in 200..300) {
-                                        episodeResponse.body()?.let { episode ->
-                                            character.firsSeenEpisodeName = episode.name
-                                            tvFirstSeen.text = episode.name
-                                        }
-                                    }
-                                }
+                                emit(BaseRepository.getResult(api.getSingleEpisode(this)).data!!.name)
                             }
                         } catch (_: Exception) {
 
                         }
-                    }.apply {
-                        this.value?.let {
-
-                        }
+                    }.observeForever {
+                        character.firsSeenEpisodeName = it
+                        tvFirstSeen.text = it
                     }
                 } else {
                     tvFirstSeen.text = character.firsSeenEpisodeName

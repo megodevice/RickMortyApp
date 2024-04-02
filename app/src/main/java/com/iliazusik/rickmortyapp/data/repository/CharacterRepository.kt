@@ -23,6 +23,7 @@ class CharacterRepository(
         }
     }
 
+
     fun fetchEpisodes(urls: List<String>): LiveData<Resource<EpisodesModel>> {
         return liveData(Dispatchers.IO) {
             if (urls.isNotEmpty()) {
