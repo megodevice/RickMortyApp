@@ -14,6 +14,13 @@ class CharacterRepository(
 ) {
     fun fetchCharacter(url: String): LiveData<Resource<Character>> {
         return liveData(Dispatchers.IO) {
+            /*
+            BaseRepository.makeRequest(this,  {
+                api.getSingleCharacter(it) // не работает
+            }, url)
+            */
+
+
             emit(Resource.Loading())
             try {
                 emit(BaseRepository.getResult(api.getSingleCharacter(url)))

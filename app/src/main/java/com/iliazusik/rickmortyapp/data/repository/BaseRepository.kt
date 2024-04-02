@@ -1,5 +1,6 @@
 package com.iliazusik.rickmortyapp.data.repository
 
+import androidx.lifecycle.LiveDataScope
 import com.iliazusik.rickmortyapp.utils.Resource
 import retrofit2.Response
 
@@ -9,6 +10,18 @@ object BaseRepository {
             Resource.Success(response.body()!!)
         else
             Resource.Error("Server error")
+    }
+
+    // не получается использовать
+    suspend fun <T> makeRequest(scope: LiveDataScope<Resource<T>>, requestFun: (String) -> Response<T>, url: String) {
+        scope.run {
+            emit(Resource.Loading())
+            try {
+                emit(getResult(requestFun(url)))
+            } catch (e: Exception) {
+                emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
+            }
+        }
     }
 
     fun convertMultiplyUrl(urls: List<String>) : String {
