@@ -2,7 +2,6 @@ package com.iliazusik.rickmortyapp.ui.characters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.lifecycle.liveData
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -12,7 +11,10 @@ import com.iliazusik.rickmortyapp.data.Character
 import com.iliazusik.rickmortyapp.data.network.CharacterApi
 import com.iliazusik.rickmortyapp.data.repository.BaseRepository
 import com.iliazusik.rickmortyapp.ui.UiHelper
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class CharactersPagingAdapter(
     private val api: CharacterApi
@@ -62,17 +64,17 @@ class CharactersPagingAdapter(
                 tvCharacterName.text = character.name
 
                 if (character.firsSeenEpisodeName.isNullOrEmpty()) {
-                    liveData(Dispatchers.IO) {
+                    CoroutineScope(Dispatchers.IO).launch {
                         try {
-                            character.episode.getOrNull(0)?.apply {
-                                emit(BaseRepository.getResult(api.getSingleEpisode(this)).data!!.name)
+                            val result = character.episode.getOrNull(0)?.let {
+                                BaseRepository.getResult(api.getSingleEpisode(it))
+                            }
+                            withContext(Dispatchers.Main) {
+                                character.firsSeenEpisodeName = result?.data?.name
+                                tvFirstSeen.text = character.firsSeenEpisodeName
                             }
                         } catch (_: Exception) {
-
                         }
-                    }.observeForever {
-                        character.firsSeenEpisodeName = it
-                        tvFirstSeen.text = it
                     }
                 } else {
                     tvFirstSeen.text = character.firsSeenEpisodeName
