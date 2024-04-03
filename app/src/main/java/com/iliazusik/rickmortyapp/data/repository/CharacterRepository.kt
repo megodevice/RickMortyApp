@@ -14,19 +14,9 @@ class CharacterRepository(
 ) {
     fun fetchCharacter(url: String): LiveData<Resource<Character>> {
         return liveData(Dispatchers.IO) {
-            /*
-            BaseRepository.makeRequest(this,  {
-                api.getSingleCharacter(it) // не работает
+            BaseRepository.makeRequest(this, { url ->
+                api.getSingleCharacter(url)
             }, url)
-            */
-
-
-            emit(Resource.Loading())
-            try {
-                emit(BaseRepository.getResult(api.getSingleCharacter(url)))
-            } catch (e: Exception) {
-                emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
-            }
         }
     }
 
@@ -36,16 +26,13 @@ class CharacterRepository(
             if (urls.isNotEmpty()) {
                 val sumEpisodesUrl = BaseRepository.convertMultiplyUrl(urls)
                 if (urls.size > 1) {
-                    emit(Resource.Loading())
-                    try {
-                        emit(BaseRepository.getResult(api.getMultiplyEpisode(sumEpisodesUrl)))
-                    } catch (e: Exception) {
-                        emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
-                    }
+                    BaseRepository.makeRequest(this, { urls ->
+                        api.getMultiplyEpisode(urls)
+                    }, sumEpisodesUrl)
                 } else {
                     emit(Resource.Loading())
                     try {
-                        BaseRepository.getResult(api.getSingleEpisode(sumEpisodesUrl)).let {
+                        BaseRepository.getResource(api.getSingleEpisode(sumEpisodesUrl)).let {
                             if (it is Resource.Success) {
                                 emit(Resource.Success(EpisodesModel().apply { add(it.data!!) }))
                             }

@@ -67,7 +67,7 @@ class CharactersPagingAdapter(
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
                             val result = character.episode.getOrNull(0)?.let {
-                                BaseRepository.getResult(api.getSingleEpisode(it))
+                                BaseRepository.getResource(api.getSingleEpisode(it))
                             }
                             withContext(Dispatchers.Main) {
                                 character.firsSeenEpisodeName = result?.data?.name

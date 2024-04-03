@@ -5,19 +5,19 @@ import com.iliazusik.rickmortyapp.utils.Resource
 import retrofit2.Response
 
 object BaseRepository {
-    fun <T> getResult(response: Response<T>): Resource<T> {
+    fun <T> getResource(response: Response<T>): Resource<T> {
         return if (response.isSuccessful && response.body() != null && response.code() in 200..300)
             Resource.Success(response.body()!!)
         else
             Resource.Error("Server error")
     }
 
-    // не получается использовать
-    suspend fun <T> makeRequest(scope: LiveDataScope<Resource<T>>, requestFun: (String) -> Response<T>, url: String) {
+
+    suspend fun <T> makeRequest(scope: LiveDataScope<Resource<T>>, requestFun: suspend (String) -> Response<T>, url: String) {
         scope.run {
             emit(Resource.Loading())
             try {
-                emit(getResult(requestFun(url)))
+                emit(getResource(requestFun(url)))
             } catch (e: Exception) {
                 emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
             }

@@ -11,7 +11,6 @@ import com.iliazusik.rickmortyapp.data.CharactersPagingSource
 class CharactersRepository(
     private val charactersPagingSource: CharactersPagingSource
 ) {
-
     fun getCharacters(): LiveData<PagingData<Character>> = Pager(
         config = PagingConfig(pageSize = 10, maxSize = 200),
         pagingSourceFactory = { charactersPagingSource }
