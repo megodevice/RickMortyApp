@@ -38,7 +38,7 @@ class CharacterRepository(
                             }
                             if (it is Resource.Error) {
                                 emit(Resource.Error(it.message!!))
-                            }
+                            } // wewe
                         }
                     } catch (e: Exception) {
                         emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
