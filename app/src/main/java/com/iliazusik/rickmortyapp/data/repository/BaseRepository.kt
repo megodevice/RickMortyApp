@@ -1,7 +1,6 @@
 package com.iliazusik.rickmortyapp.data.repository
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.LiveDataScope
 import androidx.lifecycle.liveData
 import com.iliazusik.rickmortyapp.utils.Resource
 import kotlinx.coroutines.Dispatchers
@@ -23,33 +22,12 @@ abstract class BaseRepository {
         }
     }
 
-    fun <T> getResource(response: Response<T>): Resource<T> {
-        return if (response.isSuccessful && response.body() != null && response.code() in 200..300)
-            Resource.Success(response.body()!!)
-        else
-            Resource.Error("Server error")
-    }
-
-    suspend fun <T> makeRequest(
-        scope: LiveDataScope<Resource<T>>,
-        requestFun: suspend () -> Response<T>
-    ) {
-        scope.run {
-            emit(Resource.Loading())
-            try {
-                emit(getResource(requestFun()))
-            } catch (e: Exception) {
-                emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
-            }
-        }
-    }
-
-    fun convertMultiplyUrl(urls: List<String>): String {
-        var sumEpisodesUrl: String = urls[0]
+    fun convertUrls(urls: List<String>): String {
+        var sumUrl: String = urls[0]
         if (urls.size > 1) {
             var episodesNumbers = String()
             for (url in urls) {
-                if (url != sumEpisodesUrl) {
+                if (url != sumUrl) {
                     var temp: String? = null
                     try {
                         temp =
@@ -63,8 +41,8 @@ abstract class BaseRepository {
                     }
                 }
             }
-            sumEpisodesUrl += episodesNumbers
+            sumUrl += episodesNumbers
         }
-        return sumEpisodesUrl
+        return sumUrl
     }
 }

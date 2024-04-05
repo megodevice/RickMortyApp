@@ -1,8 +1,8 @@
-package com.iliazusik.rickmortyapp.data
+package com.iliazusik.rickmortyapp.data.models
 
 import com.google.gson.annotations.SerializedName
 
-class CharactersModel(
+class Characters(
 
     @SerializedName("info")
     val requestInfo: Info,

@@ -2,6 +2,7 @@ package com.iliazusik.rickmortyapp.data
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.iliazusik.rickmortyapp.data.models.Character
 import com.iliazusik.rickmortyapp.data.network.CharacterApi
 
 class CharactersPagingSource(

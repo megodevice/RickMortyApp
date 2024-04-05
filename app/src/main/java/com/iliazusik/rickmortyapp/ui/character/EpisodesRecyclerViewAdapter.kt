@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.ilia_zusik.rickmortyapp.R
 import com.ilia_zusik.rickmortyapp.databinding.ItemEpisodeBinding
-import com.iliazusik.rickmortyapp.data.Episode
+import com.iliazusik.rickmortyapp.data.models.Episode
 import com.iliazusik.rickmortyapp.ui.UiHelper
 
 

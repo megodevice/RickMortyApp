@@ -11,7 +11,8 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.ilia_zusik.rickmortyapp.databinding.FragmentCharacterBinding
-import com.iliazusik.rickmortyapp.data.Character
+import com.iliazusik.rickmortyapp.data.models.Character
+import com.iliazusik.rickmortyapp.data.models.Episodes
 import com.iliazusik.rickmortyapp.ui.UiHelper
 import com.iliazusik.rickmortyapp.utils.Resource
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -66,22 +67,54 @@ class CharacterFragment : Fragment() {
                 is Resource.Success -> {
                     resource.data?.let { character ->
                         setBasicCharacterInfo(character)
-                        viewModel.getEpisodes(character.episode).observe(viewLifecycleOwner) { episodes ->
-                            when (episodes) {
-                                is Resource.Error -> {
-                                    Toast.makeText(requireContext(), episodes.message, Toast.LENGTH_LONG).show()
-                                }
+                        if (character.episode.size > 1) {
+                            viewModel.getEpisodes(character.episode)
+                                .observe(viewLifecycleOwner) { episodes ->
+                                    when (episodes) {
+                                        is Resource.Error -> {
+                                            Toast.makeText(
+                                                requireContext(),
+                                                episodes.message,
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }
 
-                                is Resource.Loading -> {}
+                                        is Resource.Loading -> {}
 
-                                is Resource.Success -> {
-                                    episodes.data?.let {episodesList ->
-                                        binding.tvFirstSeen.text = episodesList[0].name
-                                        episodesAdapter.submitList(episodesList)
+                                        is Resource.Success -> {
+                                            episodes.data?.let { episodesList ->
+                                                binding.tvFirstSeen.text = episodesList[0].name
+                                                episodesAdapter.submitList(episodesList)
+                                            }
+                                        }
                                     }
+                                    binding.animLoadingEpisodes.isVisible =
+                                        episodes is Resource.Loading
                                 }
-                            }
-                            binding.animLoadingEpisodes.isVisible = episodes is Resource.Loading
+                        } else {
+                            viewModel.getEpisode(character.episode[0])
+                                .observe(viewLifecycleOwner) { episodes ->
+                                    when (episodes) {
+                                        is Resource.Error -> {
+                                            Toast.makeText(
+                                                requireContext(),
+                                                episodes.message,
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }
+
+                                        is Resource.Loading -> {}
+
+                                        is Resource.Success -> {
+                                            episodes.data?.let { episode ->
+                                                binding.tvFirstSeen.text = episode.name
+                                                episodesAdapter.submitList(Episodes().apply { add(episode) })
+                                            }
+                                        }
+                                    }
+                                    binding.animLoadingEpisodes.isVisible =
+                                        episodes is Resource.Loading
+                                }
                         }
                     }
                 }

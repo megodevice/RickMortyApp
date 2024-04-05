@@ -11,4 +11,6 @@ class CharacterViewModel(private val repository: CharacterRepository) :
 
     fun getEpisodes(urls: List<String>) = repository.fetchEpisodes(urls)
 
+    fun getEpisode(url: String) = repository.fetchEpisode(url)
+
 }

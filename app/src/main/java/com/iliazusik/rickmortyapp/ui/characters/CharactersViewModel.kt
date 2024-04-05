@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.iliazusik.rickmortyapp.data.Character
+import com.iliazusik.rickmortyapp.data.models.Character
 import com.iliazusik.rickmortyapp.data.repository.CharactersRepository
 
 

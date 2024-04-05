@@ -7,9 +7,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.ilia_zusik.rickmortyapp.databinding.ItemCharacterBinding
-import com.iliazusik.rickmortyapp.data.Character
+import com.iliazusik.rickmortyapp.data.models.Character
 import com.iliazusik.rickmortyapp.data.network.CharacterApi
-import com.iliazusik.rickmortyapp.data.repository.BaseRepository
 import com.iliazusik.rickmortyapp.ui.UiHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -67,10 +66,10 @@ class CharactersPagingAdapter(
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
                             val result = character.episode.getOrNull(0)?.let {
-                                BaseRepository.getResource(api.getSingleEpisode(it))
+                                //BaseRepository.getResource(api.getSingleEpisode(it))
                             }
                             withContext(Dispatchers.Main) {
-                                character.firsSeenEpisodeName = result?.data?.name
+                                //character.firsSeenEpisodeName = result?.data?.name
                                 tvFirstSeen.text = character.firsSeenEpisodeName
                             }
                         } catch (_: Exception) {

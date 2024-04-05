@@ -5,7 +5,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.liveData
-import com.iliazusik.rickmortyapp.data.Character
+import com.iliazusik.rickmortyapp.data.models.Character
 import com.iliazusik.rickmortyapp.data.CharactersPagingSource
 
 class CharactersRepository(
