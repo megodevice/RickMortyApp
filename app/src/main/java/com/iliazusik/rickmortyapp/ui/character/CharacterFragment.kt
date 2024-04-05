@@ -10,6 +10,7 @@ import com.iliazusik.rickmortyapp.data.models.Episode
 import com.iliazusik.rickmortyapp.data.models.Episodes
 import com.iliazusik.rickmortyapp.ui.base.BaseFragment
 import com.iliazusik.rickmortyapp.ui.UiHelper
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -20,11 +21,9 @@ class CharacterFragment : BaseFragment<FragmentCharacterBinding, CharacterViewMo
 
     private val args: CharacterFragmentArgs by navArgs()
 
-    private val episodesAdapter: EpisodesRecyclerViewAdapter by lazy {
-        EpisodesRecyclerViewAdapter()
-    }
+    private val episodesAdapter: EpisodesRecyclerViewAdapter by inject()
 
-    private fun setEpisodesRV() = with(binding.rvEpisodes) {
+    private fun setEpisodesAdapter() = with(binding.rvEpisodes) {
         adapter = episodesAdapter
         layoutManager = LinearLayoutManager(
             requireContext(), LinearLayoutManager.VERTICAL, false
@@ -32,8 +31,7 @@ class CharacterFragment : BaseFragment<FragmentCharacterBinding, CharacterViewMo
     }
 
     override fun initialize() {
-        viewModel.getCharacter(args.characterUrl)
-        setEpisodesRV()
+        setEpisodesAdapter()
     }
 
     private fun setBasicLoading(loading: Boolean) {
