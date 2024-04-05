@@ -2,7 +2,6 @@ package com.iliazusik.rickmortyapp.data.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
-import com.iliazusik.rickmortyapp.data.Character
 import com.iliazusik.rickmortyapp.data.EpisodesModel
 import com.iliazusik.rickmortyapp.data.network.CharacterApi
 import com.iliazusik.rickmortyapp.utils.Resource
@@ -11,28 +10,22 @@ import kotlin.Exception
 
 class CharacterRepository(
     private val api: CharacterApi
-) {
-    fun fetchCharacter(url: String): LiveData<Resource<Character>> {
-        return liveData(Dispatchers.IO) {
-            BaseRepository.makeRequest(this, { url ->
-                api.getSingleCharacter(url)
-            }, url)
-        }
-    }
+) : BaseRepository() {
+    fun fetchCharacter(url: String) = doRequest { api.getSingleCharacter(url) }
 
 
     fun fetchEpisodes(urls: List<String>): LiveData<Resource<EpisodesModel>> {
         return liveData(Dispatchers.IO) {
             if (urls.isNotEmpty()) {
-                val sumEpisodesUrl = BaseRepository.convertMultiplyUrl(urls)
+                val sumEpisodesUrl = convertMultiplyUrl(urls)
                 if (urls.size > 1) {
-                    BaseRepository.makeRequest(this, { urls ->
-                        api.getMultiplyEpisode(urls)
-                    }, sumEpisodesUrl)
+                    makeRequest(this) {
+                        api.getMultiplyEpisode(sumEpisodesUrl)
+                    }
                 } else {
                     emit(Resource.Loading())
                     try {
-                        BaseRepository.getResource(api.getSingleEpisode(sumEpisodesUrl)).let {
+                        getResource(api.getSingleEpisode(sumEpisodesUrl)).let {
                             if (it is Resource.Success) {
                                 emit(Resource.Success(EpisodesModel().apply { add(it.data!!) }))
                             }
