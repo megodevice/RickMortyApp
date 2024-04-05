@@ -23,23 +23,22 @@ class CharacterFragment : BaseFragment<FragmentCharacterBinding, CharacterViewMo
 
     private val episodesAdapter: EpisodesRecyclerViewAdapter by inject()
 
+    override fun initialize() {
+        setEpisodesAdapter()
+    }
+
+    override fun observe() {
+        viewModel.getCharacter(args.characterUrl).resHandler(
+            { binding.animLoading.isVisible = it },
+            this::setBasicCharacterInfo
+        )
+    }
+
     private fun setEpisodesAdapter() = with(binding.rvEpisodes) {
         adapter = episodesAdapter
         layoutManager = LinearLayoutManager(
             requireContext(), LinearLayoutManager.VERTICAL, false
         )
-    }
-
-    override fun initialize() {
-        setEpisodesAdapter()
-    }
-
-    private fun setBasicLoading(loading: Boolean) {
-        binding.animLoading.isVisible = loading
-    }
-
-    private fun setEpisodesLoading(loading: Boolean) {
-        binding.animLoadingEpisodes.isVisible = loading
     }
 
     private fun <T> submitEpisodes(episode: T) {
@@ -51,13 +50,6 @@ class CharacterFragment : BaseFragment<FragmentCharacterBinding, CharacterViewMo
             episodesAdapter.submitList(Episodes().apply { add(episode) })
             binding.tvFirstSeen.text = episode.name
         }
-    }
-
-    override fun observe() {
-        viewModel.getCharacter(args.characterUrl).resHandler(
-            this::setBasicLoading,
-            this::setBasicCharacterInfo
-        )
     }
 
     private fun setBasicCharacterInfo(character: Character) {
@@ -72,12 +64,12 @@ class CharacterFragment : BaseFragment<FragmentCharacterBinding, CharacterViewMo
         }
         if (character.episodes.size > 1) {
             viewModel.getEpisodes(character.episodes).resHandler(
-                this::setEpisodesLoading,
+                { binding.animLoadingEpisodes.isVisible = it },
                 this::submitEpisodes
             )
         } else {
             viewModel.getEpisode(character.episodes[0]).resHandler(
-                this::setEpisodesLoading,
+                { binding.animLoadingEpisodes.isVisible = it },
                 this::submitEpisodes
             )
         }
