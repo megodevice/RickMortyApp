@@ -20,7 +20,8 @@ data class Info(
 
 data class Character(
     val created: String,
-    val episode: List<String>,
+    @SerializedName("episode")
+    val episodes: List<String>,
     val gender: String,
     val id: Int,
     val image: String,
@@ -31,7 +32,7 @@ data class Character(
     val status: String,
     val type: String,
     val url: String,
-    var firsSeenEpisodeName: String?,
+    var firsEpisodeName: String?,
 )
 
 data class Location(

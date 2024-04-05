@@ -1,51 +1,29 @@
 package com.iliazusik.rickmortyapp.ui.characters
 
-import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ilia_zusik.rickmortyapp.databinding.FragmentCharactersBinding
+import com.iliazusik.rickmortyapp.ui.base.BaseFragment
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class CharactersFragment : Fragment() {
+class CharactersFragment :
+    BaseFragment<FragmentCharactersBinding, CharactersViewModel>(FragmentCharactersBinding::inflate) {
 
-    private val viewModel: CharactersViewModel by viewModel()
+    override val viewModel: CharactersViewModel by viewModel()
 
     private val charactersPagingAdapter: CharactersPagingAdapter by inject()
-
-    private var _binding: FragmentCharactersBinding? = null
-    private val binding get() = _binding!!
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentCharactersBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setCharactersRecyclerView()
-        observe()
-    }
 
     private fun setCharactersRecyclerView() = with(binding.rvCharacters) {
         adapter = charactersPagingAdapter
         layoutManager = LinearLayoutManager(
-            requireContext(),
-            LinearLayoutManager.VERTICAL,
-            false
+            requireContext(), LinearLayoutManager.VERTICAL, false
         )
         charactersPagingAdapter.setOnItemClickListener {
             findNavController().navigate(
@@ -56,8 +34,11 @@ class CharactersFragment : Fragment() {
         }
     }
 
+    override fun initialize() {
+        setCharactersRecyclerView()
+    }
 
-    private fun observe() {
+    override fun observe() {
 
         viewModel.characterList.observe(viewLifecycleOwner) {
             charactersPagingAdapter.submitData(viewLifecycleOwner.lifecycle, it)
@@ -69,10 +50,5 @@ class CharactersFragment : Fragment() {
                     (it.refresh is LoadState.Loading) || (it.append is LoadState.Loading)
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
     }
 }

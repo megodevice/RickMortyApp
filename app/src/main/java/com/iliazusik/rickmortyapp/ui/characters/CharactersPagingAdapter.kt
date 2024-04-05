@@ -55,28 +55,33 @@ class CharactersPagingAdapter(
 
         fun onBind(character: Character) {
             binding.root.setOnClickListener {
-                onItemClick?.let {
-                    it(character.url)
+                onItemClick?.let { onItemClick ->
+                    onItemClick(character.url)
                 }
             }
             binding.apply {
                 tvCharacterName.text = character.name
-
-                if (character.firsSeenEpisodeName.isNullOrEmpty()) {
+                if (character.firsEpisodeName.isNullOrEmpty()) {
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
-                            val result = character.episode.getOrNull(0)?.let {
-                                //BaseRepository.getResource(api.getSingleEpisode(it))
-                            }
-                            withContext(Dispatchers.Main) {
-                                //character.firsSeenEpisodeName = result?.data?.name
-                                tvFirstSeen.text = character.firsSeenEpisodeName
+                            character.episodes.getOrNull(0)?.let {
+                                api.getEpisode(it).let { response ->
+                                    if (response.isSuccessful && response.code() in 200..300) {
+                                        response.body()?.let { episode ->
+                                            withContext(Dispatchers.Main) {
+                                                character.firsEpisodeName = episode.name
+                                                tvFirstSeen.text = character.firsEpisodeName
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         } catch (_: Exception) {
+                            tvFirstSeen.text = "- - - - - -"
                         }
                     }
                 } else {
-                    tvFirstSeen.text = character.firsSeenEpisodeName
+                    tvFirstSeen.text = character.firsEpisodeName
                 }
 
                 tvLastLocation.text = character.location.name

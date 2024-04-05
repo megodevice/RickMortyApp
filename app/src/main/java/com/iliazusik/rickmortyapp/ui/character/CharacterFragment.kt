@@ -1,29 +1,22 @@
 package com.iliazusik.rickmortyapp.ui.character
 
-import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.ilia_zusik.rickmortyapp.databinding.FragmentCharacterBinding
 import com.iliazusik.rickmortyapp.data.models.Character
+import com.iliazusik.rickmortyapp.data.models.Episode
 import com.iliazusik.rickmortyapp.data.models.Episodes
+import com.iliazusik.rickmortyapp.ui.base.BaseFragment
 import com.iliazusik.rickmortyapp.ui.UiHelper
-import com.iliazusik.rickmortyapp.utils.Resource
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class CharacterFragment : Fragment() {
-
-    private var _binding: FragmentCharacterBinding? = null
-    private val binding get() = _binding!!
-
-    private val viewModel: CharacterViewModel by viewModel()
+class CharacterFragment : BaseFragment<FragmentCharacterBinding, CharacterViewModel>(
+    FragmentCharacterBinding::inflate
+) {
+    override val viewModel: CharacterViewModel by viewModel()
 
     private val args: CharacterFragmentArgs by navArgs()
 
@@ -31,101 +24,42 @@ class CharacterFragment : Fragment() {
         EpisodesRecyclerViewAdapter()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentCharacterBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        viewModel.getCharacter(args.characterUrl)
-        setEpisodesRV()
-        observe()
-    }
-
     private fun setEpisodesRV() = with(binding.rvEpisodes) {
         adapter = episodesAdapter
         layoutManager = LinearLayoutManager(
-            requireContext(),
-            LinearLayoutManager.VERTICAL,
-            false
+            requireContext(), LinearLayoutManager.VERTICAL, false
         )
     }
 
-    private fun observe() {
-        viewModel.getCharacter(args.characterUrl).observe(viewLifecycleOwner) { resource ->
-            when (resource) {
-                is Resource.Error -> {
-                    Toast.makeText(requireContext(), resource.message, Toast.LENGTH_LONG).show()
-                }
+    override fun initialize() {
+        viewModel.getCharacter(args.characterUrl)
+        setEpisodesRV()
+    }
 
-                is Resource.Loading -> {}
+    private fun setBasicLoading(loading: Boolean) {
+        binding.animLoading.isVisible = loading
+    }
 
-                is Resource.Success -> {
-                    resource.data?.let { character ->
-                        setBasicCharacterInfo(character)
-                        if (character.episode.size > 1) {
-                            viewModel.getEpisodes(character.episode)
-                                .observe(viewLifecycleOwner) { episodes ->
-                                    when (episodes) {
-                                        is Resource.Error -> {
-                                            Toast.makeText(
-                                                requireContext(),
-                                                episodes.message,
-                                                Toast.LENGTH_LONG
-                                            ).show()
-                                        }
+    private fun setEpisodesLoading(loading: Boolean) {
+        binding.animLoadingEpisodes.isVisible = loading
+    }
 
-                                        is Resource.Loading -> {}
-
-                                        is Resource.Success -> {
-                                            episodes.data?.let { episodesList ->
-                                                binding.tvFirstSeen.text = episodesList[0].name
-                                                episodesAdapter.submitList(episodesList)
-                                            }
-                                        }
-                                    }
-                                    binding.animLoadingEpisodes.isVisible =
-                                        episodes is Resource.Loading
-                                }
-                        } else {
-                            viewModel.getEpisode(character.episode[0])
-                                .observe(viewLifecycleOwner) { episodes ->
-                                    when (episodes) {
-                                        is Resource.Error -> {
-                                            Toast.makeText(
-                                                requireContext(),
-                                                episodes.message,
-                                                Toast.LENGTH_LONG
-                                            ).show()
-                                        }
-
-                                        is Resource.Loading -> {}
-
-                                        is Resource.Success -> {
-                                            episodes.data?.let { episode ->
-                                                binding.tvFirstSeen.text = episode.name
-                                                episodesAdapter.submitList(Episodes().apply { add(episode) })
-                                            }
-                                        }
-                                    }
-                                    binding.animLoadingEpisodes.isVisible =
-                                        episodes is Resource.Loading
-                                }
-                        }
-                    }
-                }
-            }
-            binding.animLoading.isVisible = resource is Resource.Loading
+    private fun <T> submitEpisodes(episode: T) {
+        if (episode is Episodes) {
+            episodesAdapter.submitList(episode)
+            binding.tvFirstSeen.text = episode.getOrNull(0)?.name
+        }
+        if (episode is Episode) {
+            episodesAdapter.submitList(Episodes().apply { add(episode) })
+            binding.tvFirstSeen.text = episode.name
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
+    override fun observe() {
+        viewModel.getCharacter(args.characterUrl).resHandler(
+            this::setBasicLoading,
+            this::setBasicCharacterInfo
+        )
     }
 
     private fun setBasicCharacterInfo(character: Character) {
@@ -137,6 +71,17 @@ class CharacterFragment : Fragment() {
             }
             ivAvatar.load(character.image)
             UiHelper.setStatusDot(character.status, tvCharacterStatus)
+        }
+        if (character.episodes.size > 1) {
+            viewModel.getEpisodes(character.episodes).resHandler(
+                this::setEpisodesLoading,
+                this::submitEpisodes
+            )
+        } else {
+            viewModel.getEpisode(character.episodes[0]).resHandler(
+                this::setEpisodesLoading,
+                this::submitEpisodes
+            )
         }
     }
 }

@@ -7,7 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import retrofit2.Response
 
 abstract class BaseRepository {
-    protected fun <T> doRequest(requestFun: suspend () -> Response<T>): LiveData<Resource<T>> {
+    fun <T> doRequest(requestFun: suspend () -> Response<T>): LiveData<Resource<T>> {
         return liveData(Dispatchers.IO) {
             emit(Resource.Loading())
             try {
